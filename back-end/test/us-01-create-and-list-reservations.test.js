@@ -3,6 +3,11 @@ const request = require("supertest");
 const app = require("../src/app");
 const knex = require("../src/db/connection");
 
+// beforeAll(async () => {
+//   jest.setTimeout(10000);
+// //await dbHandler.connect();
+// })
+
 describe("US-01 - Create and list reservations", () => {
   beforeAll(() => {
     return knex.migrate
