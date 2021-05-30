@@ -1,6 +1,6 @@
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
-const hasProperties = require("../errors/hasProperties")
+const hasProperties = require("../errors/hasProperties");
 
 const VALID_PROPERTIES = [
   "first_name",
@@ -38,13 +38,58 @@ function validatePeople(req, res, next){
   next();
 }
 
+/*
+const reservationDate = new Date(
+            `${reservation_date}T${reservation_time}:00.000`
+        );
+        const todaysDate = new Date();
+
+        if (reservationDate < todaysDate) {
+            errors.push({message: "Please choose a future date!"})
+            //setResErrors([...resErrors, ]);
+          }
+      
+        let reservationTime = Number(reservation_time.replace(":", ""));
+        console.log("res time: " + reservationTime)
+          if (reservationTime < 1030 || reservationTime > 2130) {
+            errors.push({message: "Please choose a time between 10:30 am - 9:30 pm!"})
+            // setResErrors([...resErrors, "Please choose a time between 10:30 am - 9:30 pm!"]);
+          }
+        
+        if (reservationDate.getDay() === 2) {
+            errors.push({message: "Closed on Tuesdays! Please choose a different day!"})
+            // setResErrors([...resErrors, "Closed on Tuesdays! Please choose a differnt day!"]);
+            
+        }
+        
+*/
+
 function validateDateAndTime(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
-  if (!reservation_date.match(/\d{4}-\d{2}-\d{2}/))
-    return next({ status: 400, message: 'reservation_date is invalid!' });
+  const reservationDate = new Date(`${reservation_date}T${reservation_time}:00.000`);
+  const todaysDate = new Date();
+  const reservationTime = Number(reservation_time.replace(":", ""));
 
-  if (!reservation_time.match(/\d{2}:\d{2}/))
+  if (!reservation_date.match(/\d{4}-\d{2}-\d{2}/)) {
+    return next({ status: 400, message: 'reservation_date is invalid!' });
+  }
+
+  if (reservationDate < todaysDate) {
+    return next({status: 400, message: "Requested reservation is in the future"})
+  }
+
+  if (reservationDate.getDay() === 2) {
+    return next({status: 400, message: "Restaurant is closed on Tuesdays"})
+  }
+  
+  if (!reservation_time.match(/\d{2}:\d{2}/)) {
     return next({ status: 400, message: 'reservation_time is invalid!' });
+  }
+  
+  if (reservationTime < 1030 || reservationTime > 2130) {
+    return next({ status: 400, message: 'Restaurant is closed during requested reservation time.'})
+  }
+  
   next();
 }
 
