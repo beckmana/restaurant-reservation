@@ -13,19 +13,19 @@ const VALID_PROPERTIES = [
 
 const hasRequiredProperties = hasProperties(...VALID_PROPERTIES)
 
-function hasOnlyValidProperties(req, res, next) {
-  const { data = {} } = req.body;
+// function hasOnlyValidProperties(req, res, next) {
+//   const { data = {} } = req.body;
 
-  const invalidFields = Object.keys(data).filter(field => !VALID_PROPERTIES.includes(field));
+//   const invalidFields = Object.keys(data).filter(field => !VALID_PROPERTIES.includes(field));
   
-  if (invalidFields.length) {
-    return next({
-      status: 400,
-      message: `Invalid field(s): ${invalidFields.join(", ")}`,
-    });
-  }
-  next();
-}
+//   if (invalidFields.length) {
+//     return next({
+//       status: 400,
+//       message: `Invalid field(s): ${invalidFields.join(", ")}`,
+//     });
+//   }
+//   next();
+// }
 
 function validatePeople(req, res, next){
   const {people} = req.body.data;
@@ -64,6 +64,14 @@ function validateDateAndTime(req, res, next) {
     return next({ status: 400, message: 'Restaurant is closed during requested reservation time.'})
   }
   
+  next();
+}
+
+function validateNewResStatus(req, res, next) {
+  const { status } = req.body.data;
+  if (status !== "booked") {
+    return next({ status: 400, message: `status can't be seated or finished`})
+  }
   next();
 }
 
@@ -125,19 +133,20 @@ function read(req, res) {
 async function updateStatus(req, res, next) {
   const { reservation_id } = req.params;
   const { status } = req.body.data;
-  const data = await reservationsService.updateStatus(reservation_id, status);
+  const reservation = await service.updateStatus(reservation_id, status);
 
-  res.status(200).json({ data: { status: data[0] }});
+  res.status(200).json({ data: { status: reservation[0] }});
 };
 
 module.exports = {
   list: asyncErrorBoundary(list),
   read: [asyncErrorBoundary(reservationExists), read],
   create: [
-    asyncErrorBoundary(hasOnlyValidProperties),
+   // asyncErrorBoundary(hasOnlyValidProperties),
     asyncErrorBoundary(hasRequiredProperties),
     asyncErrorBoundary(validatePeople),
     asyncErrorBoundary(validateDateAndTime),
+    asyncErrorBoundary(validateNewResStatus),
     asyncErrorBoundary(create),
   ],
   updateStatus: [

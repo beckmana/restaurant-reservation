@@ -36,7 +36,7 @@ function updateStatus(reservation_id, status) {
         .select("*")
         .where({ reservation_id })
         .update({ status: status })
-        .returning("*");
+        .returning("status");
 }
 
 module.exports = {
