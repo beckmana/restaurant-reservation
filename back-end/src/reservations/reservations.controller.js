@@ -38,32 +38,6 @@ function validatePeople(req, res, next){
   next();
 }
 
-/*
-const reservationDate = new Date(
-            `${reservation_date}T${reservation_time}:00.000`
-        );
-        const todaysDate = new Date();
-
-        if (reservationDate < todaysDate) {
-            errors.push({message: "Please choose a future date!"})
-            //setResErrors([...resErrors, ]);
-          }
-      
-        let reservationTime = Number(reservation_time.replace(":", ""));
-        console.log("res time: " + reservationTime)
-          if (reservationTime < 1030 || reservationTime > 2130) {
-            errors.push({message: "Please choose a time between 10:30 am - 9:30 pm!"})
-            // setResErrors([...resErrors, "Please choose a time between 10:30 am - 9:30 pm!"]);
-          }
-        
-        if (reservationDate.getDay() === 2) {
-            errors.push({message: "Closed on Tuesdays! Please choose a different day!"})
-            // setResErrors([...resErrors, "Closed on Tuesdays! Please choose a differnt day!"]);
-            
-        }
-        
-*/
-
 function validateDateAndTime(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
   const reservationDate = new Date(`${reservation_date}T${reservation_time}:00.000`);
@@ -104,6 +78,24 @@ async function reservationExists(req, res, next) {
   next();
 }
 
+async function validateStatus(req, res, next) {
+  const currentStatus = res.locals.reservation.status;
+  const { status } = req.body.data;
+
+  if (status === "cancelled") return next();
+  
+  if (currentStatus === "finished") {
+    return next({ status: 400, message: "A finished reservation cannot be updated." });
+  };
+
+  if (status !== "booked" && status !== "seated" && status !== "finished") {
+    return next({ status: 400, message: "unknown status." });
+  };
+
+  next();
+};
+
+
 
 /**
  * List handler for reservation resources
@@ -130,6 +122,14 @@ function read(req, res) {
   res.json({data: res.locals.reservation})
 }
 
+async function updateStatus(req, res, next) {
+  const { reservation_id } = req.params;
+  const { status } = req.body.data;
+  const data = await reservationsService.updateStatus(reservation_id, status);
+
+  res.status(200).json({ data: { status: data[0] }});
+};
+
 module.exports = {
   list: asyncErrorBoundary(list),
   read: [asyncErrorBoundary(reservationExists), read],
@@ -140,4 +140,9 @@ module.exports = {
     asyncErrorBoundary(validateDateAndTime),
     asyncErrorBoundary(create),
   ],
+  updateStatus: [
+    asyncErrorBoundary(reservationExists),
+    asyncErrorBoundary(validateStatus),
+    asyncErrorBoundary(updateStatus)
+  ]
 };

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-// import {today} from "../utils/date-time"
 
 export default function ReservationForm() {
     const history = useHistory();
@@ -13,62 +12,47 @@ export default function ReservationForm() {
         mobile_number: "",
         reservation_date: "",
         reservation_time: "",
-        people: "",
+        people: 1,
     };
-   // console.log("today "  + today())
-   // console.log("new date " + new Date())
     
     const [reservationForm, setReservationForm] = useState({ ...initForm });
     const [resErrors, setResErrors] = useState([]);
 
-    // let reservationDate = new Date(
-    //     `${reservationForm.reservation_date}T${reservationForm.reservation_time}:00.000`
-    // );
-
-   // console.log("res date: " + reservationForm.reservation_date);
-   // console.log("day of week: " + reservationDate.getDay())
-
+    /*
+    The /reservations/new page will display an error message with className="alert alert-danger" if any of the following constraints are violated:
+        - The reservation date is a Tuesday as the restaurant is closed on Tuesdays.
+        - The reservation date is in the past. Only future reservations are allowed.
+        - The reservation time is before 10:30 AM.
+        - The reservation time is after 9:30 PM, because the restaurant closes at 10:30 PM and the customer needs to have time to enjoy their meal.
+        - The reservation date and time combination is in the past. Only future reservations are allowed. 
+            *E.g., if it is noon, only allow reservations starting after noon today.
+    */
     const checkValidInputs = async () => {
         const { reservation_date, reservation_time } = reservationForm;
         const errors = [];
-
-        const reservationDate = new Date(
-            `${reservation_date}T${reservation_time}:00.000`
-        );
+        const reservationDate = new Date(`${reservation_date}T${reservation_time}:00.000`);
         const todaysDate = new Date();
+        const reservationTime = Number(reservation_time.replace(":", ""));
 
-        // console.log("res date: " + parseInt(reservation_date.match(/\d+/g)))
-        // console.log("td date: " + parseFloat(today().match(/\d+/g)))
-        // console.log("res date < td date: " + reservation_date < today())
-        // console.log("res date - td date: " + reservation_date - today())
         if (reservationDate < todaysDate) {
             errors.push({message: "Please choose a future date!"})
-            //setResErrors([...resErrors, ]);
-          }
-      
-        let reservationTime = Number(reservation_time.replace(":", ""));
-        console.log("res time: " + reservationTime)
-          if (reservationTime < 1030 || reservationTime > 2130) {
-            errors.push({message: "Please choose a time between 10:30 am - 9:30 pm!"})
-            // setResErrors([...resErrors, "Please choose a time between 10:30 am - 9:30 pm!"]);
           }
         
+        if (reservationTime < 1030 || reservationTime > 2130) {
+            errors.push({message: "Please choose a time between 10:30 am - 9:30 pm!"})
+        }
+        
         if (reservationDate.getDay() === 2) {
-            errors.push({message: "Closed on Tuesdays! Please choose a different day!"})
-            // setResErrors([...resErrors, "Closed on Tuesdays! Please choose a differnt day!"]);
-            
+            errors.push({message: "Closed on Tuesdays! Please choose a different day!"}) 
         }
 
         setResErrors(errors)
-        console.log(errors)
-        //console.log(resErrors)
         if (errors.length > 0) {
             return false;
           } else {
             return true;
           }
     }
-    
     
     const errorMessages = () => {
         return resErrors.map((err, index) => <ErrorAlert key={index} error={err} />);
@@ -91,10 +75,8 @@ export default function ReservationForm() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        //checkValidInputs();
-        console.log(reservationForm)
+        
         let valid = await checkValidInputs();
-        console.log(valid)
         
         if (valid) {
         await createReservation(reservationForm)
@@ -111,11 +93,11 @@ export default function ReservationForm() {
 
     return (
         <div>
-            <h3>New Reservation</h3>
+            <h3 className="pt-2">New Reservation</h3>
             {errorMessages()}
             <form onSubmit={handleSubmit}>
                 <div className="form-row">
-                    <div className = "form-group col-md-5">
+                    <div className = "form-group col-md-4">
                         <label htmlFor="first_name"> First Name: </label>
                         <input
                             className = "form-control"
@@ -128,7 +110,7 @@ export default function ReservationForm() {
                             required
                         />
                     </div>
-                    <div className = "form-group col-md-5">
+                    <div className = "form-group col-md-4">
                         <label htmlFor="last_name">Last Name:</label>
                         <input
                             className = "form-control"
@@ -141,8 +123,9 @@ export default function ReservationForm() {
                             required
                         />
                     </div>
-                    <br />
-                    <div className = "form-group col-md-5">
+                </div>
+                <div className="form-row">
+                    <div className = "form-group col-md-4">
                         <label htmlFor="mobile_number">Phone Number:</label>
                         <input
                             className = "form-control"
@@ -155,20 +138,21 @@ export default function ReservationForm() {
                             required
                         />
                     </div>
-                    <div className = "form-group col-md-5">
+                    <div className = "form-group col-md-4">
                         <label htmlFor="people">Number of People:</label>
                         <input
                             className = "form-control"
                             id="people"
-                            type="text"
+                            type="number"
                             name="people"
                             onChange={handleChange}
                             value={reservationForm.people}
                             required
                          />
                     </div>
-                    <br />
-                    <div className = "form-group col-md-5">
+                </div>
+                <div className="form-row">
+                    <div className = "form-group col-md-4">
                         <label htmlFor="reservation_date">Date:</label>
                         <input
                             className = "form-control"
@@ -182,7 +166,7 @@ export default function ReservationForm() {
                             required
                         />
                     </div>
-                    <div className = "form-group col-md-5">
+                    <div className = "form-group col-md-4">
                         <label htmlFor="reservation_time">Time:</label>
                         <input
                             className = "form-control"

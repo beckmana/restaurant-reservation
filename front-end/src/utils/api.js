@@ -5,8 +5,6 @@
 import formatReservationDate from "./format-reservation-date";
 import formatReservationTime from "./format-reservation-date";
 
-//import axios from "axios";
-
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
@@ -83,4 +81,49 @@ export async function createReservation(reservation, signal){
 export async function readReservation(id, signal) {
   const url = new URL(`${API_BASE_URL}/reservations/${id}`);
   return await fetchJson(url, { headers, signal }, []);
+}
+
+export async function listTables(signal) {
+  const url = new URL(`${API_BASE_URL}/tables`);
+  return await fetchJson(url, { headers, signal }, []);
+}
+
+export async function createTable(table, signal) {
+  const url = new URL(`${API_BASE_URL}/tables`);
+  return await fetchJson(url, {
+    headers,
+    signal,
+    method: "POST",
+    body: JSON.stringify({ data: table })
+  });
+}
+
+export async function seatReservation(reservation_id, table_id, signal) {
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
+  return await fetchJson(url, {
+    headers,
+    signal,
+    method: "PUT",
+    body: JSON.stringify({ data: { reservation_id: reservation_id } }),
+  }, []);
+}
+
+export async function updateResStatus(reservation_id, status, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
+  return await fetchJson(url, {
+    headers,
+    signal,
+    method: "PUT",
+    body: JSON.stringify({ data: { status } })
+  }, []);
+}
+
+export async function unassignTable(table_id, reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
+  return await fetchJson(url, {
+    headers,
+    signal,
+    method: "DELETE",
+    body: JSON.stringify({data: {reservation_id: reservation_id}})
+  })
 }
