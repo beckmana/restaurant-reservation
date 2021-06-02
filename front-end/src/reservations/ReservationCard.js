@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {formatAsTime} from "../utils/date-time"
 
-export default function ReservationCard({ reservation, seat }) {
+export default function ReservationCard({ reservation }) {
     const resTime = formatAsTime(reservation.reservation_time);
     //const resTime = reservation.reservation_time
     const resPhone = formatPhoneNumber(reservation.mobile_number);
@@ -71,20 +71,20 @@ export default function ReservationCard({ reservation, seat }) {
                     <>
                     <Link
                         to={`/reservations/${reservation.reservation_id}/seat`}
-                        className="btn btn-info btn-sm"
+                        className="btn btn-info btn-md"
                     >
                         Seat
                     </Link>
                     <button
                         data-reservation-id-cancel={reservation.reservation_id}
-                        className="mx-2 btn btn-danger btn-sm"
+                        className="mx-2 btn btn-danger btn-md"
                         onClick={handleCancel}
                     >
                         Cancel
                     </button>
                     <Link
                         to={`/reservations/${reservation.reservation_id}/edit`}
-                        className="btn btn-success btn-sm"
+                        className="btn btn-success btn-md"
                     >
                         Edit
                     </Link>

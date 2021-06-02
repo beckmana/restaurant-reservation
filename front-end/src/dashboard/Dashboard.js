@@ -43,12 +43,12 @@ function Dashboard({defaultDate}) {
   return (
     <main className="text-center">
       
-        <h1 className="my-5 py-5">Dashboard</h1>
-          <button onClick={() => setDate(previous(date))} className="btn btn-secondary">Previous Day</button>
-          <button className="m-3 btn btn-success" onClick={() => setDate(today())}>
+        <h1 className="my-2">Dashboard</h1>
+          <button onClick={() => setDate(previous(date))} className="btn btn-secondary btn-lg">Previous Day</button>
+          <button className="m-3 btn btn-success btn-lg" onClick={() => setDate(today())}>
           Today
         </button>
-        <button onClick={() => setDate(next(date))} className="btn btn-secondary">Next Day</button>
+        <button onClick={() => setDate(next(date))} className="btn btn-secondary btn-lg">Next Day</button>
         <br />
         <label className="form-label pb-4">
           <input
@@ -65,7 +65,7 @@ function Dashboard({defaultDate}) {
         {reservations.length ? (
           null
         ) : (
-          `No reservations for ${date}`
+          <h5 className="lead">No Reservations</h5>
         )}
         <div className="d-flex justify-content-center flex-wrap">
           {reservations.map((reservation) => (
@@ -77,7 +77,7 @@ function Dashboard({defaultDate}) {
         <ErrorAlert error={tablesError} />
         <div className='d-flex justify-content-center flex-wrap'>
           {tables.map((table) => (
-            <TableCard key={table.table_id} table={table} />
+            <TableCard key={table.table_id} table={table} loadDashboard={loadDashboard}/>
           ))}
           </div>
         
