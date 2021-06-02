@@ -7,6 +7,7 @@ import { today } from "../utils/date-time";
 import ReservationForm from "../reservations/ReservationForm";
 import TableForm from "../tables/TableForm";
 import SeatRes from "../tables/SeatRes";
+import ReservationSearch from "../reservations/ReservationSearch"
 /**
  * Defines all the routes for the application.
  *
@@ -31,6 +32,9 @@ function Routes() {
       </Route>
       <Route path="/reservations/new">
         <ReservationForm />
+      </Route>
+      <Route path="/search">
+        <ReservationSearch />
       </Route>
       <Route path="/tables/new">
         <TableForm />

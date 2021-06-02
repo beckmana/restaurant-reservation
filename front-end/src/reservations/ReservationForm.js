@@ -75,7 +75,7 @@ export default function ReservationForm() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+        console.log(reservationForm)
         let valid = await checkValidInputs();
         
         if (valid) {

@@ -69,7 +69,7 @@ function validateDateAndTime(req, res, next) {
 
 function validateNewResStatus(req, res, next) {
   const { status } = req.body.data;
-  if (status !== "booked") {
+  if (status === "seated" || status === "finished") {
     return next({ status: 400, message: `status can't be seated or finished`})
   }
   next();
@@ -109,16 +109,15 @@ async function validateStatus(req, res, next) {
  * List handler for reservation resources
  */
 async function list(req, res, next) {
-  let date = req.query.date;
-  if (!date) {
-    //date = "2020-12-30T06:00:00.000Z"
-    
-    return next();
+  const { date, mobile_number } = req.query;
+  
+  if (date) {
+    return res.json({ data: await service.list(date) });
+  } else if (mobile_number) {
+    return res.json({ data: await service.search(mobile_number) });
   }
 
-  res.json({
-    data: await service.list(date)
-  });
+  
 }
 
 async function create(req, res) {

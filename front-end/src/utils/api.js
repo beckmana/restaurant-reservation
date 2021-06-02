@@ -127,3 +127,12 @@ export async function unassignTable(table_id, reservation_id, signal) {
     body: JSON.stringify({data: {reservation_id: reservation_id}})
   })
 }
+
+export async function mobileSearch(mobile_number, signal) {
+  const url = new URL(
+    `${API_BASE_URL}/reservations?mobile_number=${mobile_number}`
+  );
+  return await fetchJson(url, { headers, signal }, [])
+    .then(formatReservationDate)
+    .then(formatReservationTime);
+}
