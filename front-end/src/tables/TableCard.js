@@ -1,13 +1,23 @@
 import React from "react";
-import {unassignTable} from "../utils/api"
-//import { Link } from "react-router-dom";
+import { unassignTable } from "../utils/api";
 
+/**
+ * Creates a single table card on the Dashboard page.
+ * 
+ * Displays the table_name, and capacity.
+ * 
+ * If the table status is occupied - displays a "finish" button. Otherwise, displays no buttons. 
+ * 
+ * @param Table props
+ * the current table data object
+ * @param loadDashboard props
+ * reloads the dashboard page with the updated table information
+ * @returns {JSX.Element}
+ */
 export default function TableCard({table, loadDashboard}) {
     
-    /*
-    data-table-id-status=${table.table_id}
-     */
     const tableStatus = table.reservation_id ? "Occupied" : "Free";
+
     const handleFinish = async (e) => {
         e.preventDefault();
         if (
@@ -34,7 +44,6 @@ export default function TableCard({table, loadDashboard}) {
                             {table.capacity}
                         </h6>
               </div>
-    
               <div className="d-flex justify-content-between">
                 <h6 data-table-id-status={table.table_id}>
                     {tableStatus}
@@ -48,7 +57,6 @@ export default function TableCard({table, loadDashboard}) {
                         Finish
                     </button> : null}
               </div>
-              
             </div>
           </div>
         </>

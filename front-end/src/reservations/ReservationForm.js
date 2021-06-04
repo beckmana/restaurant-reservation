@@ -5,6 +5,11 @@ import ErrorAlert from "../layout/ErrorAlert";
 import formatReservationDate from "../utils/format-reservation-date";
 import formatReservationTime from "../utils/format-reservation-time";
 
+/**
+ * Input form to create and edit a reservation. 
+ * 
+ * @returns {JSX.Element}
+ */
 export default function ReservationForm() {
     const history = useHistory();
     const { reservation_id } = useParams();
@@ -21,16 +26,10 @@ export default function ReservationForm() {
     const [reservationForm, setReservationForm] = useState({ ...initForm });
     const [resErrors, setResErrors] = useState([]);
 
-    /*
-    The /reservations/new page will display an error message with className="alert alert-danger" if any of the following constraints are violated:
-        - The reservation date is a Tuesday as the restaurant is closed on Tuesdays.
-        - The reservation date is in the past. Only future reservations are allowed.
-        - The reservation time is before 10:30 AM.
-        - The reservation time is after 9:30 PM, because the restaurant closes at 10:30 PM and the customer needs to have time to enjoy their meal.
-        - The reservation date and time combination is in the past. Only future reservations are allowed. 
-            *E.g., if it is noon, only allow reservations starting after noon today.
-    */
+    
     useEffect(() => {
+        //If there is a reservation_id param then there is already a reservation 
+        //set the reservationForm with the reservation data
         if (reservation_id) {
             readReservation(reservation_id)
                 .then((res) => {
@@ -45,10 +44,20 @@ export default function ReservationForm() {
                         people: res.people,
                     });
                 })
-                .catch(setResErrors)
-        } 
+                .catch(setResErrors);
+        }
     }, [reservation_id]);
-    
+
+
+    /*
+    The /reservations/new page will display an error message with className="alert alert-danger" if any of the following constraints are violated:
+        - The reservation date is a Tuesday as the restaurant is closed on Tuesdays.
+        - The reservation date is in the past. Only future reservations are allowed.
+        - The reservation time is before 10:30 AM.
+        - The reservation time is after 9:30 PM, because the restaurant closes at 10:30 PM and the customer needs to have time to enjoy their meal.
+        - The reservation date and time combination is in the past. Only future reservations are allowed. 
+            *E.g., if it is noon, only allow reservations starting after noon today.
+    */
     const checkValidInputs = async () => {
         const { reservation_date, reservation_time } = reservationForm;
         const errors = [];
@@ -57,29 +66,28 @@ export default function ReservationForm() {
         const reservationTime = Number(reservation_time.replace(":", ""));
 
         if (reservationDate < todaysDate) {
-            errors.push({message: "Please choose a future date!"})
-          }
+            errors.push({ message: "Please choose a future date!" });
+        };
         
         if (reservationTime < 1030 || reservationTime > 2130) {
-            errors.push({message: "Please choose a time between 10:30 am - 9:30 pm!"})
-        }
+            errors.push({ message: "Please choose a time between 10:30 am - 9:30 pm!" });
+        };
         
         if (reservationDate.getDay() === 2) {
-            errors.push({message: "Closed on Tuesdays! Please choose a different day!"}) 
-        }
+            errors.push({ message: "Closed on Tuesdays! Please choose a different day!" });
+        };
 
-        setResErrors(errors)
+        setResErrors(errors);
         if (errors.length > 0) {
             return false;
           } else {
             return true;
-          }
+        };
     }
     
     const errorMessages = () => {
         return resErrors.map((err, index) => <ErrorAlert key={index} error={err} />);
       };
-
 
     const handleChange = ({ target }) => {
         if (target.name === "people") {
@@ -97,7 +105,6 @@ export default function ReservationForm() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(reservationForm)
         let valid = await checkValidInputs();
         
         if (valid) {

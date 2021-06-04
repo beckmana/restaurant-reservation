@@ -2,6 +2,9 @@ const service = require('./tables.service');
 const reservationService = require('../reservations/reservations.service');
 const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
 
+//  validates the following
+//  - the table_name is non empty, and contains at least 2 characters
+//  - the table capacity is nonempty, is larger than 0, and is a number
 async function validateTable(req, res, next) {
     if (!req.body.data) return next({ status: 400, message: 'Data Missing!' });
   
@@ -70,19 +73,31 @@ async function tableExists(req, res, next) {
     next();
 }
 
+/**
+ * List handler for table resources
+ */
 async function list(req, res) {
     res.json({ data: await service.list() });
 }
 
+/**
+ * Read handler for target table 
+ */
 async function read(req, res) {
     res.json({ data: res.locals.table });
 }
 
+/**
+ * Create handler for new table 
+ */
 async function create(req, res) {
     const newTable = await service.create(res.locals.newTable);
     res.status(201).json({ data: newTable });
 }
 
+/**
+ * Update handler for target table 
+ */
 async function update(req, res) {
     const { reservation_id } = res.locals.reservation
     
@@ -92,6 +107,9 @@ async function update(req, res) {
     res.status(200).json({ data: updatedTable });
 }
 
+/**
+ * delete (finish) handler for target table 
+ */
 async function unassign(req, res, next) {
     const table = await service.read(req.params.table_id);
 
@@ -103,7 +121,6 @@ async function unassign(req, res, next) {
     await reservationService.updateStatus(table.reservation_id, 'finished');
 
     res.status(200).json({ data: openTable });
-
 }
 
 module.exports = {

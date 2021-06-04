@@ -3,12 +3,20 @@ import ErrorAlert from "../layout/ErrorAlert";
 import ReservationCard from "./ReservationCard";
 import { mobileSearch } from "../utils/api";
 
+/**
+ * Searchs for a reservation by mobile_number. 
+ * All found reservations are displayed in a ReservationCard (same as dashboard)
+ * If no reservation is found, displays "No reservations found"
+ * 
+ * @returns {JSX.Element}
+ */
 export default function ReservationSearch() {
 
     const [phoneNumber, setPhoneNumber] = useState("");
     const [foundReservations, setFoundReservations] = useState([]);
-    const [errors, setErrors] = useState(null)
+    const [errors, setErrors] = useState(null);
 
+    //creates a ReservationCard for each found reservation. 
     const reservationCards = foundReservations.map((foundReservation) => {
         return <ReservationCard key={foundReservation.reservation_id} reservation={foundReservation} />
     });
@@ -23,12 +31,12 @@ export default function ReservationSearch() {
         const abortController = new AbortController();
         await mobileSearch(phoneNumber, abortController.signal)
             .then(reservations => {
-                setFoundReservations(reservations)
+                setFoundReservations(reservations);
                 if (reservationCards.length === 0) {
-                    setErrors({message: "No reservations found"})
+                    setErrors({ message: "No reservations found" });
                 } else {
-                    setErrors(null)
-                }
+                    setErrors(null);
+                };
             })
             .catch(setErrors);
     };
@@ -36,7 +44,6 @@ export default function ReservationSearch() {
     return (
         <div>
             <h3 className="pt-2">Find Reservation</h3>
-            
             <form onSubmit={handleFind}>
                 <div className="form-row">
                     <div className = "form-group col-md-5">
@@ -48,9 +55,8 @@ export default function ReservationSearch() {
                             onChange={handleChange}
                         />
                     </div>
-                    
                 </div>
-                    <button className="btn btn-primary mr-2" type="submit"> Find </button>
+                <button className="btn btn-primary mr-2" type="submit"> Find </button>
             </form>
             {reservationCards.length === 0 ? (
                 <ErrorAlert error={errors} />

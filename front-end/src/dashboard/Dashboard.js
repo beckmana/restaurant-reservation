@@ -5,7 +5,7 @@ import { today, next, previous } from "../utils/date-time";
 import useQuery from "../utils/useQuery";
 import ReservationCard from "../reservations/ReservationCard";
 import TableCard from "../tables/TableCard";
-//import formatReservationDate from "../utils/format-reservation-date"
+
 /**
  * Defines the dashboard page.
  * @param date
@@ -32,9 +32,9 @@ function Dashboard({defaultDate}) {
       .catch(setReservationsError);
     listTables(abortController.signal)
       .then(setTables)
-      .catch(setTablesError)
+      .catch(setTablesError);
     return () => abortController.abort();
-  }
+  };
   
   const handleDateChange = (event) => {
     setDate(event.target.value);
@@ -42,7 +42,6 @@ function Dashboard({defaultDate}) {
 
   return (
     <main className="text-center">
-      
         <h1 className="my-2">Dashboard</h1>
           <button onClick={() => setDate(previous(date))} className="btn btn-secondary btn-lg">Previous Day</button>
           <button className="m-3 btn btn-success btn-lg" onClick={() => setDate(today())}>
@@ -80,7 +79,6 @@ function Dashboard({defaultDate}) {
             <TableCard key={table.table_id} table={table} loadDashboard={loadDashboard}/>
           ))}
           </div>
-        
     </main>
   );
 }

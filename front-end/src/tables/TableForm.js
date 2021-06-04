@@ -1,8 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
+/**
+ * Input form to create a new Table. 
+ * 
+ * @returns {JSX.Element}
+ */
 export default function TableForm() {
     const history = useHistory();
     
@@ -20,38 +25,37 @@ export default function TableForm() {
         const errors = [];
 
         if (table_name.length < 2) {
-            errors.push({message: "Table name must be more than 2 characters"})
-          }
+            errors.push({ message: "Table name must be more than 2 characters" });
+        };
         
         if (capacity < 1) {
-            errors.push({message: "Table capacity must be at least 1"})
-        }
+            errors.push({ message: "Table capacity must be at least 1" });
+        };
 
         setTableErrors(errors)
         if (errors.length > 0) {
             return false;
           } else {
             return true;
-          }
+        };
     }
     
     const errorMessages = () => {
         return tableErrors.map((err, index) => <ErrorAlert key={index} error={err} />);
       };
 
-
     const handleChange = ({ target }) => {
         if (target.name === "capacity") {
             setTableForm({
                 ...tableForm,
                 [target.name]: Number(target.value)
-            })
+            });
         } else {
             setTableForm({
                 ...tableForm,
                 [target.name]: target.value,
             });
-        }
+        };
     };
 
     const handleSubmit = async (event) => {
@@ -64,7 +68,7 @@ export default function TableForm() {
                 .then(() =>
                     history.push(`/dashboard`)
             );
-        }
+        };
     };
 
     const handleCancel = event => {

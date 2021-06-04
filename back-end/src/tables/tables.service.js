@@ -6,7 +6,6 @@ function list() {
         .orderBy("table_name");
 }
 
-
 function create(newTable) {
     return knex("tables")
         .insert(newTable)
@@ -18,7 +17,7 @@ function read(table_id) {
     return knex("tables")
         .select("*")
         .where({ table_id })
-        .first()
+        .first();
 }
 
 function update(table_id, reservation_id) {

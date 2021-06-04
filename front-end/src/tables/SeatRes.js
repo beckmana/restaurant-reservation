@@ -1,8 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { listTables, seatReservation, readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-
+/**
+ * Seats the choosen Reservation to an available table. 
+ * Updates the Reservation to "seated" 
+ * Updates the table data with the reservation_id
+ * 
+ * @returns {JSX.Element}
+ */
 export default function SeatRes() {
     const history = useHistory();
     const { reservation_id } = useParams();
@@ -22,11 +28,19 @@ export default function SeatRes() {
           await listTables(abortController.signal)
               .then(setTables)
               .catch(setTableError);
-          return
+          return;
         }
         loadPage(reservation_id); 
     }, [reservation_id]);
-    
+  
+   // cannot seat a reservation party larger than the table capacity
+    const validateCapacity = () => {
+      const foundTable = tables.find(
+        (table) => table.table_id === parseInt(selectedTable)
+      );
+      return reservation.people > foundTable.capacity;
+    };
+  
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateCapacity()) {
@@ -46,31 +60,21 @@ export default function SeatRes() {
     const handleChange = ({ target }) => {
         setSelectedTable(target.value);
     };
-
-    const validateCapacity = () => {
-        const foundTable = tables.find(
-          (table) => table.table_id === parseInt(selectedTable)
-        );
-    
-        return reservation.people > foundTable.capacity;
-      };
-
+  
     const tableOptions = tables.map((table) => {
         if (table.reservation_id) return null;
 
-            return (
-                <option key={table.table_id} value={table.table_id}>
-                    {table.table_name} - {table.capacity}
-                </option>
-            );
-        
+        return (
+          <option key={table.table_id} value={table.table_id}>
+             {table.table_name} - {table.capacity}
+          </option>
+        );
     });
     
       return (
           <div className="m-2">
               <ErrorAlert error={reservationError} />
               <ErrorAlert error={tableError} />
-              
               <h3>Seat Reservation #{reservation_id}</h3>
               <h5>- {reservation.last_name} party of {reservation.people} - </h5>
               <br />

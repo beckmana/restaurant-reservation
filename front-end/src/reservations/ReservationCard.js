@@ -3,9 +3,21 @@ import { Link } from "react-router-dom";
 import { formatAsTime } from "../utils/date-time";
 import { updateResStatus } from "../utils/api";
 
+/**
+ * Creates a single reservation card on the Dashboard page.
+ * 
+ * Displays the first_name, last_name, status, people, reservation_date, reservation_time, and mobile_number.
+ * 
+ * If the reservation status is booked - displays a "Seat", "Cancel", and "Edit" button. Otherwise, displays no buttons. 
+ *  
+ * @param reservation props
+ *  the current reservation data object
+ * @returns {JSX.Element}
+ *  a Card component with the reservation information on it. 
+ */
 export default function ReservationCard({ reservation }) {
+    //Formats the reservation_time as HH:MM and the mobile_number as (xxx) xxx-xxxx
     const resTime = formatAsTime(reservation.reservation_time);
-    //const resTime = reservation.reservation_time
     const resPhone = formatPhoneNumber(reservation.mobile_number);
 
     function formatPhoneNumber(phoneNumberString) {
@@ -21,7 +33,7 @@ export default function ReservationCard({ reservation }) {
     const handleCancel = async (reservationId) => {
     if (
       window.confirm(
-        "Do you want to cancel this reservation? \n \n \nThis cannot be undone."
+        "Do you want to cancel this reservation? \n \nThis cannot be undone."
       )
     ) {
       const abortController = new AbortController();
@@ -30,7 +42,6 @@ export default function ReservationCard({ reservation }) {
       }
       console.log("cancel reservation " + reservationId )
   }
-    
     
     return (
         <>
@@ -49,16 +60,13 @@ export default function ReservationCard({ reservation }) {
               <h5 data-reservation-id-status={reservation.reservation_id}>
                   {reservation.status}
               </h5>
-            </div>
-                
+            </div>       
               <div className="d-flex justify-content-between">
                 <h6>Date: {reservation.reservation_date}</h6>
                 <h6>Time: {resTime}</h6>
               </div>
               <div className="d-flex justify-content-between">
                 <h6>Phone: {resPhone}</h6>
-    
-                
               </div>
               <div className="d-flex justify-content-center">
                 {reservation.status === "booked" ? (
