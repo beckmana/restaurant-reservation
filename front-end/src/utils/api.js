@@ -78,8 +78,8 @@ export async function createReservation(reservation, signal){
   });
 }
 
-export async function readReservation(id, signal) {
-  const url = new URL(`${API_BASE_URL}/reservations/${id}`);
+export async function readReservation(reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
   return await fetchJson(url, { headers, signal }, []);
 }
 
@@ -135,4 +135,14 @@ export async function mobileSearch(mobile_number, signal) {
   return await fetchJson(url, { headers, signal }, [])
     .then(formatReservationDate)
     .then(formatReservationTime);
+}
+
+export async function updateReservation(reservation_id, updatedReservation, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/edit`);
+  return await fetchJson(url, {
+    headers,
+    signal,
+    method: "PUT",
+    body: JSON.stringify({data: updatedReservation})
+  })
 }

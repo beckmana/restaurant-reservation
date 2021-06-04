@@ -8,6 +8,7 @@ import ReservationForm from "../reservations/ReservationForm";
 import TableForm from "../tables/TableForm";
 import SeatRes from "../tables/SeatRes";
 import ReservationSearch from "../reservations/ReservationSearch"
+//import EditReservation from "../reservations/EditReservation"
 /**
  * Defines all the routes for the application.
  *
@@ -29,6 +30,9 @@ function Routes() {
       </Route>
       <Route path="/reservations/:reservation_id/seat">
         <SeatRes />
+      </Route>
+      <Route path="/reservations/:reservation_id/edit">
+        <ReservationForm />
       </Route>
       <Route path="/reservations/new">
         <ReservationForm />

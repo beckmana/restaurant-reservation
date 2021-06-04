@@ -137,6 +137,20 @@ async function updateStatus(req, res, next) {
   res.status(200).json({ data: { status: reservation[0] }});
 };
 
+async function updateReservation(req, res, next) {
+  const { reservation_id } = req.params;
+  if (reservation_id) {
+    res.json({
+      data: await service.update(reservation_id, req.body.data),
+    });
+  }else{
+    next({
+      status: 404,
+      message: "no reservation_id found"
+    })
+  }
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   read: [asyncErrorBoundary(reservationExists), read],
@@ -152,5 +166,12 @@ module.exports = {
     asyncErrorBoundary(reservationExists),
     asyncErrorBoundary(validateStatus),
     asyncErrorBoundary(updateStatus)
+  ],
+  update: [
+    asyncErrorBoundary(reservationExists),
+    asyncErrorBoundary(hasRequiredProperties),
+    asyncErrorBoundary(validatePeople),
+    asyncErrorBoundary(validateDateAndTime),
+    asyncErrorBoundary(updateReservation),
   ]
 };

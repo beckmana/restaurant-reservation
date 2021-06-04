@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { createReservation } from "../utils/api";
+import React, { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { createReservation, updateReservation, readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
+import formatReservationDate from "../utils/format-reservation-date";
+import formatReservationTime from "../utils/format-reservation-time";
 
 export default function ReservationForm() {
     const history = useHistory();
-    
+    const { reservation_id } = useParams();
+
     const initForm = {
         first_name: "",
         last_name: "",
@@ -27,6 +30,25 @@ export default function ReservationForm() {
         - The reservation date and time combination is in the past. Only future reservations are allowed. 
             *E.g., if it is noon, only allow reservations starting after noon today.
     */
+    useEffect(() => {
+        if (reservation_id) {
+            readReservation(reservation_id)
+                .then((res) => {
+                    formatReservationDate(res);
+                    formatReservationTime(res);
+                    setReservationForm({
+                        first_name: res.first_name,
+                        last_name: res.last_name,
+                        mobile_number: res.mobile_number,
+                        reservation_date: res.reservation_date,
+                        reservation_time: res.reservation_time,
+                        people: res.people,
+                    });
+                })
+                .catch(setResErrors)
+        } 
+    }, [reservation_id]);
+    
     const checkValidInputs = async () => {
         const { reservation_date, reservation_time } = reservationForm;
         const errors = [];
@@ -79,10 +101,22 @@ export default function ReservationForm() {
         let valid = await checkValidInputs();
         
         if (valid) {
-        await createReservation(reservationForm)
-                .then((res) =>
-                    history.push(`/dashboard?date=${reservationForm.reservation_date}`)
-            );
+            if (reservation_id) {
+                await updateReservation(reservation_id, {
+                    ...reservationForm,
+                    reservation_id: reservation_id,
+                    status: "booked",
+                })
+                    .then((res) =>
+                        history.push(`/dashboard?date=${reservationForm.reservation_date}`)
+                    );
+                
+            } else {
+                await createReservation(reservationForm)
+                    .then((res) =>
+                        history.push(`/dashboard?date=${reservationForm.reservation_date}`)
+                    );
+            }
         }
     };
 

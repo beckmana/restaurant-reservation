@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {formatAsTime} from "../utils/date-time"
+import { formatAsTime } from "../utils/date-time";
+import { updateResStatus } from "../utils/api";
 
 export default function ReservationCard({ reservation }) {
     const resTime = formatAsTime(reservation.reservation_time);
@@ -16,27 +17,20 @@ export default function ReservationCard({ reservation }) {
         }
         return null;
       }
-    /*
-    const handleCancel = async () => {
+    
+    const handleCancel = async (reservationId) => {
     if (
       window.confirm(
         "Do you want to cancel this reservation? \n \n \nThis cannot be undone."
       )
     ) {
-      try {
-        await updateStatus(reservation.reservation_id, {
-          data: { status: "cancelled" },
-        });
-        window.location.reload();
-      } catch (error) {
-        console.error(error);
+      const abortController = new AbortController();
+      await updateResStatus(reservationId, "cancelled", abortController.signal);
+      window.location.reload();
       }
-    }
-  };
-    */
-    const handleCancel = () => {
-        console.log(`cancel reservation ${reservation.reservation_id}`)
-    }
+      console.log("cancel reservation " + reservationId )
+  }
+    
     
     return (
         <>
@@ -78,7 +72,7 @@ export default function ReservationCard({ reservation }) {
                     <button
                         data-reservation-id-cancel={reservation.reservation_id}
                         className="mx-2 btn btn-danger btn-md"
-                        onClick={handleCancel}
+                        onClick={()=>handleCancel(reservation.reservation_id)}
                     >
                         Cancel
                     </button>
