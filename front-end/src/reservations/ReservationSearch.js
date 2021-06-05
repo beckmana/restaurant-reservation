@@ -25,8 +25,8 @@ export default function ReservationSearch() {
         setPhoneNumber(target.value);
     };
 
-    const handleFind = async (e) => {
-        e.preventDefault();
+    const handleFind = async (event) => {
+        event.preventDefault();
 
         const abortController = new AbortController();
         await mobileSearch(phoneNumber, abortController.signal)
