@@ -71,31 +71,31 @@ export default function SeatRes() {
         );
     });
     
-      return (
-          <div className="m-2">
-              <ErrorAlert error={reservationError} />
-              <ErrorAlert error={tableError} />
-              <h3>Seat Reservation #{reservation_id}</h3>
-              <h5>- {reservation.last_name} party of {reservation.people} - </h5>
-              <br />
-            <form onSubmit={handleSubmit}>
-                <div className="form-row">
-                    <label htmlFor="table_id">
-                        <select
-                        id="table_id"
-                        name="table_id"
-                        onChange={handleChange}
-                        value={selectedTable}
-                        >
-                            <option>Please Select a Table</option>
-                            {tableOptions}
-                         </select>
-                    </label>
-                  </div>
-                  <br />
-                <button type="submit" className="btn btn-primary mr-2"> Submit </button>
-                <button className="btn btn-secondary mr-2" onClick={handleCancel}> Cancel </button>
-              </form>
+    return (
+        <div className="m-2">
+          <ErrorAlert error={reservationError} />
+          <ErrorAlert error={tableError} />
+          <h3>Seat Reservation #{reservation_id}</h3>
+          <h5>- {reservation.last_name} party of {reservation.people} - </h5>
+          <br />
+          <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <label htmlFor="table_id">
+                  <select
+                    id="table_id"
+                    name="table_id"
+                    onChange={handleChange}
+                    value={selectedTable}
+                  >
+                    <option>Please Select a Table</option>
+                    {tableOptions}
+                  </select>
+               </label>
+             </div>
+            <br />
+            <button type="submit" className="btn btn-primary mr-2"> Submit </button>
+            <button className="btn btn-secondary mr-2" onClick={handleCancel}> Cancel </button>
+          </form>
         </div>
     );
 }
